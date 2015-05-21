@@ -28,7 +28,7 @@ def buildTopo():
 
 
     # Add links Mbps, ms delay, 10% loss
-    linkopts = dict(bw=100, delay='5ms', loss=2, max_queue_size=1000, use_htb=True)
+    linkopts = dict(bw=1000, delay='5ms', loss=0, max_queue_size=1000, use_htb=True)
     #linkopts = dict()
 
     # alternately: linkopts = {'bw':10, 'delay':'5ms', 'loss':10,
@@ -87,10 +87,10 @@ if __name__ == '__main__':
     h2.cmd('java -jar sdicn-0.0.1-SNAPSHOT.jar &')
 
     h4 = net.get('h4')
-    h4.cmd('java -jar server-0.0.1-SNAPSHOT.jar --ip=10.0.0.4 --server.port=9004 &')
+    h4.cmd('java -jar server-0.0.1-SNAPSHOT.jar --ip=10.0.0.4 --server.port=9004 --sdicnapp.location=10.0.0.2:6666 &')
 
     h5 = net.get('h5')
-    h5.cmd('java -jar server-0.0.1-SNAPSHOT.jar --ip=10.0.0.5 --server.port=9005 &')
+    h5.cmd('java -jar server-0.0.1-SNAPSHOT.jar --ip=10.0.0.5 --server.port=9005 --sdicnapp.location=10.0.0.2:6666 &')
     
     net.pingAll()
 
@@ -98,14 +98,9 @@ if __name__ == '__main__':
 
     h4.cmd("curl -i -F name=content4 -F file=@foo http://10.0.0.4:9004/upload")
     h5.cmd("curl -i -F name=content5 -F file=@foo http://10.0.0.5:9005/upload")
-
+    
     CLI(net)
-    call(["killall", "Wrapper"])
     call("fuser -k 6633/tcp", shell=True)
-    
-
-    
-    
-        
+         
     net.stop()    
     
